@@ -3673,6 +3673,23 @@ module Make
            >>= M.op op va
            >>= fun v -> write_reg_dest rd v ii
            >>= nextSet rd
+        | I_MOP (op,v,rd,rn,rm,ra) ->
+          (* TODO: check v != V128? *)
+           let op =
+               match op with
+               | MOPExt.ADD -> Op.Add
+               | MOPExt.SUB -> Op.Sub
+           and sz = tr_variant v in
+           begin
+             (* TODO: slice to destsize? *)
+             (read_reg_ord_sz sz rn ii)
+             >>| (read_reg_ord_sz sz rm ii)
+             >>| read_reg_ord_sz sz ra ii
+           end >>= fun ((vn,vm),va) ->
+           M.op Op.Mul vn vm
+           >>= M.op op va
+           >>= fun v -> write_reg_dest rd v ii
+           >>= nextSet rd
         (* Barrier *)
         | I_FENCE b ->
             !(create_barrier b ii)
