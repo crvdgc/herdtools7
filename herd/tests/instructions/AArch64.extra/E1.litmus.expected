@@ -1,0 +1,10 @@
+Test E1 Required
+States 1
+0:X1=2; 0:X2=3; 0:X3=5; 0:X4=11;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition forall (0:X1=2 /\ 0:X2=3 /\ 0:X3=5 /\ 0:X4=11)
+Observation E1 Always 1 0
+Hash=e6b2ade0b91d469a9aac23a9d4b3e3d4
+
