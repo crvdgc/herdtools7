@@ -1,0 +1,12 @@
+AArch64 E4
+(* IRG with filtering *)
+Variant=mte
+{
+int x=100;
+0:X0=x;
+}
+ P0            ;
+ MOV W2,#1     ;
+ IRG X1,X0,X2  ;
+forall (not (0:X1=x:t0))
+

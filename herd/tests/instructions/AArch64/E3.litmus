@@ -1,0 +1,11 @@
+AArch64 E3
+(* IRG *)
+Variant=mte
+{
+int x=100;
+0:X0=x;
+}
+ P0            ;
+ IRG X1,X0     ;
+exists 0:X1=x:t2
+

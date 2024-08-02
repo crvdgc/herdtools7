@@ -1,0 +1,10 @@
+Test E6 Allowed
+States 1
+0:X1=x:t0;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition exists (0:X1=x:t0)
+Observation E6 Always 1 0
+Hash=de17bcb7d83fd113de3e5f72449bdb86
+

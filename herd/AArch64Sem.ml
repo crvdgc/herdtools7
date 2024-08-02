@@ -3159,6 +3159,78 @@ module Make
       let stzg = do_stzg Once
       and stz2g = do_stzg Twice
 
+      (* parallel { *)
+      (* let irg rd rn _rm_opt ii = *)
+        (* let read_opt = function *)
+        (*   | None -> M.unitT None *)
+        (*   | Some r -> read_reg_ord r ii >>= fun v -> M.unitT (Some v) *)
+        (* in *)
+        (* read_reg_ord rd ii >>| *)
+        (* read_reg_ord rn ii >>| *)
+        (* read_opt rm_opt >>= fun ((_vd, _vn), _vm_opt) -> *)
+        (* TODO: if all ones, return '0000' *)
+        (* TODO: process excluding *)
+        (* let vs = List.init 2 (fun v -> do_write_tag vd (V.intToV v) ii) in *)
+        (* let vs = List.init 1 (fun _v -> do_write_tag vd V.one ii) in *)
+        (* List.fold_right (|||) vs (M.unitT ()) >>= B.next1T *)
+        (* do_write_tag vd V.one ii >>= fun () -> *)
+      (* } parallel *)
+
+      (* altT { *)
+      let irg (rd : AArch64Base.reg) rn rm_opt ii =
+        (* TODO: check Memory Tagging enabled *)
+        (* TODO: read GCR_EL1.RRND *)
+        (* TODO: read GCR_EL1.Exclude *)
+        let ( let* ) = ( >>= ) in
+        let* (vn, vm_opt) =
+          read_reg_ord rn ii >>|
+          match rm_opt with
+          | None -> M.unitT None
+          | Some rm ->
+              let* v = read_reg_ord rm ii in
+              M.unitT (Some v)
+        in
+        let set_tag n =
+          let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
+          let* v = M.op Op.SetTag vn tag in
+          write_reg_dest rd v ii
+          >>= B.nextSetT rd
+        in
+        let do_irg n =
+          let* () = match vm_opt with
+            | None -> M.unitT ()
+            | Some vm -> M.isBitUnsetT vm (V.intToV n)
+          in
+          set_tag n
+        in
+        let* is_all_ones =
+          match vm_opt with
+          | None -> M.unitT V.zero
+          | Some vm ->
+              let all_ones_mask = V.intToV 0xFFFF in
+              let* masked = M.op Op.And vm all_ones_mask in
+              M.op Op.Eq masked all_ones_mask
+        in
+        M.choiceT
+          is_all_ones
+          (set_tag 0)
+          (match List.init 16 Fun.id with
+          | h::t ->
+            List.fold_right M.altT (List.map do_irg t) (do_irg h)
+          | _ -> (* impossible *) assert false)
+      (* } altT *)
+
+    (* det { *)
+    (* let irg rd rn _rm_opt ii = *)
+    (*   let ( let* ) = (>>=) in *)
+    (*   let* vn = read_reg_ord rn ii in *)
+    (*   (* let tag = V.Val (Constant.Tag "hello") in *) *)
+    (*   let tag = V.fresh_var () in *)
+    (*   let* v = M.op Op.SetTag vn tag in *)
+    (*   write_reg rd v ii >>= B.next1T *)
+    (* } det *)
+
+
 (*********************)
 (* Instruction fetch *)
 (*********************)
@@ -3351,6 +3423,9 @@ module Make
         | I_LDG (rt,rn,k) ->
             check_memtag "LDG" ;
             ldg rt rn k ii
+        | I_IRG (rd,rn,rm_opt) ->
+            check_memtag "IRG" ;
+            irg rd rn rm_opt ii
         | I_STXR(var,t,rr,rs,rd) ->
             stxr (tr_variant var) t rr rs rd ii
         | I_STXRBH(bh,t,rr,rs,rd) ->

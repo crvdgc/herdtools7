@@ -1708,6 +1708,7 @@ type 'k kinstruction =
   | I_STZ2G of reg * reg * 'k idx
   | I_LDG of reg * reg * 'k
   | I_UDF of 'k
+  | I_IRG of reg * reg * reg option
 
 type instruction = int kinstruction
 type parsedInstruction = MetaConst.k kinstruction
@@ -2409,6 +2410,11 @@ let do_pp_instruction m =
       pp_mem "LDG" V64 rt rn (K k)
   | I_UDF k ->
       sprintf "UDF %s" (m.pp_k k)
+  | I_IRG (rd,rn,rm_opt) ->
+      sprintf "IRG %s,%s%s" (pp_xreg rd) (pp_xreg rn)
+      (match rm_opt with
+      | None -> ""
+      | Some rm -> "," ^ pp_xreg rm)
 
 let m_int = { compat = false ; pp_k = string_of_int ;
               zerop = (function 0 -> true | _ -> false);
@@ -2522,6 +2528,9 @@ let fold_regs (f_regs,f_sregs) =
     -> fold_reg r1 (fold_reg r2 c)
   | I_MRS (r,sr) | I_MSR (sr,r)
     -> fold_reg (SysReg sr) (fold_reg r c)
+  | I_IRG (r1,r2,r3_opt) ->
+      let c = match r3_opt with None -> c | Some r3 -> fold_reg r3 c in
+      fold_reg r1 (fold_reg r2 c)
   | I_OP3 (_,_,r1,r2,e)
     -> fold_reg r1 (fold_reg r2 (fold_op_ext e c))
   | I_LDR (_,r1,r2,idx) | I_LDRSW (r1,r2,idx)
@@ -2956,6 +2965,8 @@ let map_regs f_reg f_symb =
       I_STZ2G (map_reg r1,map_reg r2,k)
   | I_LDG (r1,r2,k) ->
       I_LDG (map_reg r1,map_reg r2, k)
+  | I_IRG (r1,r2,r3_opt) ->
+      I_IRG (map_reg r1,map_reg r2,Option.map map_reg r3_opt)
 
 (* No addresses burried in ARM code *)
 let fold_addrs _f c _ins = c
@@ -3029,7 +3040,7 @@ let get_next =
   | I_DC _
   | I_TLBI _
   | I_MRS _ | I_MSR _
-  | I_STG _|I_STZG _|I_STZ2G _|I_LDG _
+  | I_STG _|I_STZG _|I_STZ2G _|I_LDG _|I_IRG _
   | I_ALIGND _| I_ALIGNU _|I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _|I_CLRTAG _
   | I_CPYTYPE _|I_CPYVALUE _|I_CSEAL _|I_GC _|I_LDCT _|I_SC _|I_SEAL _|I_STCT _
   | I_UNSEAL _
@@ -3314,6 +3325,7 @@ module PseudoI = struct
         | I_ADD_SV _ | I_INDEX_SS _
         | I_NEG_SV _ | I_EOR_SV _ | I_MOVPRFX _
         | I_SMSTART _ | I_SMSTOP _ | I_ADDA _
+        | I_IRG _
             as keep -> keep
         | I_LDR (v,r1,r2,idx) -> I_LDR (v,r1,r2,ext_tr idx)
         | I_LDRSW (r1,r2,idx) -> I_LDRSW (r1,r2,ext_tr idx)
@@ -3497,7 +3509,7 @@ module PseudoI = struct
         | I_INDEX_SI _ | I_INDEX_IS _  | I_INDEX_SS _ | I_INDEX_II _
         | I_RDVL _ | I_ADDVL _ | I_CNT_INC_SVE _
         | I_MOV_SV _ | I_MOVA_TV _ | I_MOVA_VT _ | I_ADDA _
-        | I_SMSTART _ | I_SMSTOP _
+        | I_SMSTART _ | I_SMSTOP _ | I_IRG _
           -> 0
         | I_LD1M (rs, _, _)
         | I_LD2M (rs, _, _)
