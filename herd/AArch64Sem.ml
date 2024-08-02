@@ -2908,10 +2908,9 @@ module Make
         (* do_write_tag vd V.one ii >>= fun () -> *)
         let (let*) = (>>=) in
         let* vn = read_reg_ord rn ii in
-        let* v = M.op Op.SetTag vn (V.Val (Constant.Tag "1")) in
+        let* v = M.op Op.SetTag vn (V.Val (Constant.Tag "hello")) in
         let* () = write_reg rd v ii in
         B.nextT
-
 
 (*********************)
 (* Instruction fetch *)

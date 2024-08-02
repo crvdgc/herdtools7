@@ -1,10 +1,10 @@
 Test E3 Required
 States 1
-0:X1=0;
-No
+0:X1=x:hello;
+Ok
 Witnesses
-Positive: 0 Negative: 1
-Condition forall (0:X1=1)
-Observation E3 Never 0 1
-Hash=9a8be9024ba6a272f5be22cb04d0602c
+Positive: 1 Negative: 0
+Condition forall (0:X1=x:hello)
+Observation E3 Always 1 0
+Hash=7a03767ecaa7b1d8972bfc9b79c6c12c
 

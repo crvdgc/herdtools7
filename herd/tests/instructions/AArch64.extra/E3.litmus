@@ -6,9 +6,6 @@ int x=100;
 0:X0=x;
 }
  P0            ;
- IRG X0,X0     ;
- LDR W1,[X0]   ;
- LSR X1,X1,#56 ;
- AND X1,X1,#15 ;
-forall 0:X1=1
+ IRG X1,X0     ;
+forall 0:X1=x:hello
 
