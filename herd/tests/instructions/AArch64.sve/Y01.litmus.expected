@@ -1,0 +1,11 @@
+Test Y01 Required
+States 1
+s={8,7,6,5,4,3,2,1}; t={9,5,5,1,1,5,5,9};
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Flag Scalable-Vector-Extensions-is-work-in-progress
+Condition forall (t={9,5,5,1,1,5,5,9} /\ s={8,7,6,5,4,3,2,1})
+Observation Y01 Always 1 0
+Hash=8f987c02b299c6f220d7903ec693f66a
+
