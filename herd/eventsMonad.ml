@@ -829,7 +829,7 @@ Monad type:
               (Evt.map fr ract) in
           (eiid, (un, None))
 
-(* Extract speculaive behaviout, base case is to speculate active branch *)
+(* Extract speculaive behaviour, base case is to speculate active branch *)
     let as_speculated (act,spec) = match spec with
     | Some spec -> spec
     | None -> do_speculates act
