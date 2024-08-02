@@ -105,7 +105,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
     | I_ST3M _| I_ST4 _| I_ST4M _| I_STCT _| I_STG _| I_STLR _| I_STLRBH _| I_STOP _
     | I_STOPBH _| I_STP _| I_STP_SIMD _| I_STR _ | I_STLUR_SIMD _
     | I_STR_SIMD _| I_STRBH _| I_STUR_SIMD _| I_STXP _| I_STXR _
-    | I_STXRBH _| I_STZG _| I_STZ2G _
+    | I_STXRBH _| I_STZG _| I_STZ2G _| I_IRG _
     | I_SWP _| I_SWPBH _| I_SXTW _| I_TLBI _| I_UBFM _
     | I_UDF _| I_UNSEAL _ | I_ADDSUBEXT _ | I_ABS _ | I_REV _ | I_EXTR _
     | I_MOPL _ | I_MOP _
@@ -303,7 +303,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_ADR (_, _)|I_RBIT (_, _, _)|I_ABS _|I_REV _|I_EXTR _|I_FENCE _
       | I_SBFM (_,_,_,_,_) | I_UBFM (_,_,_,_,_)
       | I_CSEL (_, _, _, _, _, _)|I_IC (_, _)|I_DC (_, _)|I_MRS (_, _)|I_MSR (_, _)
-      | I_STG _ | I_LDG _
+      | I_STG _ | I_LDG _ | I_IRG _
       | I_ALIGND _| I_ALIGNU _|I_BUILD _|I_CHKEQ _|I_CHKSLD _|I_CHKTGD _
       | I_CLRTAG _|I_CPYTYPE _|I_CPYVALUE _|I_CSEAL _|I_GC _|I_LDCT _|I_SEAL _
       | I_STCT _|I_UNSEAL _
@@ -391,6 +391,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_NEG_SV (r,_,_) | I_MOVPRFX (r,_,_) | I_EOR_SV (r,_,_)
       | I_INDEX_SI (r,_,_,_) | I_INDEX_IS (r,_,_,_) | I_INDEX_SS (r,_,_,_) | I_INDEX_II (r,_,_)
       | I_RDVL (r,_) | I_ADDVL (r,_,_) | I_CNT_INC_SVE (_,r,_,_)
+      | I_IRG (r,_,_) (* TODO: check if correct? *)
         -> [r]
       | I_MSR (sr,_)
         -> [(SysReg sr)]
@@ -459,7 +460,7 @@ module Make (C:Arch_herd.Config)(V:Value.AArch64) =
       | I_MOV _|I_MOVZ _|I_MOVN _|I_MOVK _|I_SXTW _
       | I_OP3 _|I_ADR _|I_RBIT _|I_ABS _|I_REV _|I_EXTR _|I_FENCE _
       | I_CSEL _|I_IC _|I_DC _|I_TLBI _|I_MRS _|I_MSR _
-      | I_STG _|I_STZG _|I_STZ2G _|I_LDG _|I_UDF _
+      | I_STG _|I_STZG _|I_STZ2G _|I_LDG _|I_UDF _|I_IRG _
       | I_ADDSUBEXT _|I_MOPL _ | I_MOP _
       | I_WHILELT _ | I_WHILELE _ | I_WHILELO _ | I_WHILELS _
       | I_UADDV _
