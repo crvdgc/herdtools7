@@ -3006,6 +3006,7 @@ let is_valid i =
   | I_MOV (v,_,RV (w,_)) -> v=w
   | I_CAS (_,_,_,_,ZR) -> false
   | I_CAS (_,_,_,_,_) -> true
+  | I_MOP (_, V128,_,_, _,_) -> false
   | I_OP3 (_,(ADD|SUB|ADDS|SUBS),_,ZR,OpExt.Imm _)
   | I_OP3 (_,(ADD|SUB),ZR,_,OpExt.Imm _)
     -> false

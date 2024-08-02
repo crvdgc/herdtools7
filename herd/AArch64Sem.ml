@@ -3674,7 +3674,6 @@ module Make
            >>= fun v -> write_reg_dest rd v ii
            >>= nextSet rd
         | I_MOP (op,v,rd,rn,rm,ra) ->
-          (* TODO: check v != V128? *)
            let op =
                match op with
                | MOPExt.ADD -> Op.Add
