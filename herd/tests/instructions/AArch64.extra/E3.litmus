@@ -10,5 +10,5 @@ int x=100;
  LDR W1,[X0]   ;
  LSR X1,X1,#56 ;
  AND X1,X1,#15 ;
-forall 0:X1=0
+forall 0:X1=1
 

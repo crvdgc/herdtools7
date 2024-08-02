@@ -2889,7 +2889,7 @@ module Make
       let stzg = do_stzg Once
       and stz2g = do_stzg Twice
 
-      (* let irg rd _rn _rm_opt ii = *)
+      let irg rd rn _rm_opt ii =
         (* let read_opt = function *)
         (*   | None -> M.unitT None *)
         (*   | Some r -> read_reg_ord r ii >>= fun v -> M.unitT (Some v) *)
@@ -2906,8 +2906,26 @@ module Make
         (* let vs = List.init 1 (fun _v -> do_write_tag vd V.one ii) in *)
         (* List.fold_right (|||) vs (M.unitT ()) >>= B.next1T *)
         (* do_write_tag vd V.one ii >>= fun () -> *)
-        (* write_reg_dest rd V.one ii >>= *)
-        (* B.nextSetT rd *)
+        let ma = read_reg_ord rn ii in
+        let do_irg a_virt ac ma =
+          let _do_irg a =
+            let (let*) = (>>=) in
+            let* atag = M.op1 Op.TagLoc a in
+            let* tag = do_read_tag atag ii in
+            let* v = M.op Op.SetTag a_virt tag in
+            let* () = write_reg rd v ii in
+            B.nextT
+          in
+          if Access.is_physical ac then
+            M.bind_ctrldata ma _do_irg
+          else
+            ma >>= _do_irg
+        in
+        M.delay_kont "ldg" ma
+          (fun a_virt ma ->
+             let do_irg = do_irg a_virt in
+             lift_memop rn Dir.R false false (fun ac ma _mv -> do_irg ac ma)
+               (to_perms "w" MachSize.S128) ma mzero Annot.N ii)
 
 
 (*********************)
@@ -3102,10 +3120,9 @@ module Make
         | I_LDG (rt,rn,k) ->
             check_memtag "LDG" ;
             ldg rt rn k ii
-        | I_IRG (_rd,_rn,_rm_opt) ->
+        | I_IRG (rd,rn,rm_opt) ->
             check_memtag "IRG" ;
-            (* irg rd rn rm_opt ii *)
-            B.nextT
+            irg rd rn rm_opt ii
         | I_STXR(var,t,rr,rs,rd) ->
             stxr (tr_variant var) t rr rs rd ii
         | I_STXRBH(bh,t,rr,rs,rd) ->
