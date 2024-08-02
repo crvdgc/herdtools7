@@ -105,7 +105,7 @@ module Make
       let (>>||) = M.para_atomic
       let (>>!) = M.(>>!)
       let (>>::) = M.(>>::)
-      (* let (|||) = M.(|||) *)
+      let (|||) = M.(|||)
 
       let sxt_op sz = M.op1 (Op.Sxt sz)
       and uxt_op sz = M.op1 (Op.Mask sz)
@@ -2906,11 +2906,15 @@ module Make
         (* let vs = List.init 1 (fun _v -> do_write_tag vd V.one ii) in *)
         (* List.fold_right (|||) vs (M.unitT ()) >>= B.next1T *)
         (* do_write_tag vd V.one ii >>= fun () -> *)
-        let (let*) = (>>=) in
-        let* vn = read_reg_ord rn ii in
-        let* v = M.op Op.SetTag vn (V.Val (Constant.Tag "hello")) in
-        let* () = write_reg rd v ii in
-        B.nextT
+        let do_irg n =
+          let (let*) = (>>=) in
+          let* vn = read_reg_ord rn ii in
+          let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
+          let* v = M.op Op.SetTag vn tag in
+          write_reg rd v ii
+        in
+        List.fold_right (|||) (List.map do_irg [1;2;3]) (M.unitT ()) >>= B.next1T
+
 
 (*********************)
 (* Instruction fetch *)
