@@ -2166,6 +2166,7 @@ module Make
           >>= (fun v -> write_reg_neon_sz (tr_simd_variant var) r v ii)
 
       let sum_elems (v1,v2) = M.add v1 v2
+      let eor_elems (v1,v2) = M.eor v1 v2
 
       let simd_add r1 r2 r3 ii =
         let nelem = neon_nelem r1 in
@@ -2239,6 +2240,24 @@ module Make
             match idx with
             | 0 -> op >>= fun old_val -> add old_val idx
             | _ -> reduce (idx-1) (op >>= fun old_val -> add old_val idx)
+          in
+          reduce (nelem-1) mzero >>= fun v ->
+            write_reg_scalable r1 v ii
+
+      let eor_sv r1 r2 r3 ii =
+        let nelem = scalable_nelem r1 in
+        let esize = scalable_esize r1 in
+        read_reg_scalable false r3 ii >>|
+        read_reg_scalable false r2 ii >>= fun (v1,v2) ->
+          let eor cur_val idx =
+            scalable_getlane v1 idx esize >>|
+            scalable_getlane v2 idx esize >>=
+            eor_elems >>= scalable_setlane cur_val idx esize
+          in
+          let rec reduce idx op =
+            match idx with
+            | 0 -> op >>= fun old_val -> eor old_val idx
+            | _ -> reduce (idx-1) (op >>= fun old_val -> eor old_val idx)
           in
           reduce (nelem-1) mzero >>= fun v ->
             write_reg_scalable r1 v ii
@@ -3344,6 +3363,9 @@ module Make
         |  I_ADD_SV (r1,r2,r3) ->
           check_sve inst;
           !(add_sv r1 r2 r3 ii)
+        |  I_EOR_SV (r1,r2,r3) ->
+          check_sve inst;
+          !(eor_sv r1 r2 r3 ii)
         | I_UADDV(var,v,p,z) ->
           check_sve inst;
           !(uaddv var v p z ii)

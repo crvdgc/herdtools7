@@ -334,6 +334,7 @@ module type S =
     val op : A.V.op_t -> A.V.v -> A.V.v -> A.V.v t
     val op3 : Op.op3 -> A.V.v -> A.V.v -> A.V.v -> A.V.v t
     val add : A.V.v -> A.V.v -> A.V.v t
+    val eor : A.V.v -> A.V.v -> A.V.v t
 
 (* Equality *)
     val assign : A.V.v -> A.V.v -> unit t
