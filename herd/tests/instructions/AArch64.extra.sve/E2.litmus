@@ -17,7 +17,7 @@ PTRUE P0.S            ;
 L1:                   ;
 LD1W {Z0.S},P0/Z,[X1] ;
 LD1W {Z1.S},P0/Z,[X2] ;
-ADD Z0.S,Z0.S,Z1.S    ;
+EOR Z0.S,Z0.S,Z1.S    ;
 ST1W {Z0.S},P0,[X1]   ;
 ADD X1,X1,X0,LSL #2   ;
 ADD X2,X2,X0,LSL #2   ;
@@ -30,11 +30,11 @@ L3:                   ;
 PTRUE P0.S,VL8        ;
 LD1W {Z0.S},P0/Z,[X1] ;
 LD1W {Z1.S},P0/Z,[X2] ;
-ADD Z0.S,Z0.S,Z0.S    ;
+EOR Z0.S,Z0.S,Z0.S    ;
 ST1W {Z0.S},P0,[X1]   ;
 L0:                   ;
 forall (
-  t={9,9,9,9,9,9,9,9} /\
+  t={9,5,5,1,1,5,5,9} /\
   s={8,7,6,5,4,3,2,1}
 )
 

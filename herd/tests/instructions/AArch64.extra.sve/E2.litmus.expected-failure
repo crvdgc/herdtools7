@@ -1,0 +1,1 @@
+Warning: File "./herd/tests/instructions/AArch64.extra.sve/E2.litmus", line 20, characters 4-8: unexpected 'Z0.S' (in prog) (User error)
