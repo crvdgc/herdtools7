@@ -2065,7 +2065,7 @@ let do_pp_instruction m =
   | I_MOVPRFX (r1,r2,r3) ->
     sprintf "MOVPRFX %s,%s,%s" (pp_zreg r1) (pp_preg r2) (pp_zreg r3)
   | I_EOR_SV (r1,r2,r3) ->
-    sprintf "EOR %s,%s,%s" (pp_zreg r1) (pp_preg r2) (pp_zreg r3)
+    sprintf "EOR %s,%s,%s" (pp_zreg r1) (pp_zreg r2) (pp_zreg r3)
   | I_INDEX_SI (r1,v,r2,k) ->
       sprintf "INDEX %s,%s,%s" (pp_zreg r1) (pp_vreg v r2) (m.pp_k k)
   | I_INDEX_IS (r1,v,k,r2) ->

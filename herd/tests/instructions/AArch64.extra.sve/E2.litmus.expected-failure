@@ -1,3 +1,0 @@
-
-Fatal: File "./herd/tests/instructions/AArch64.extra.sve/E2.litmus" Adios
-Fatal error: exception File "lib/AArch64Base.ml", line 485, characters 7-13: Assertion failed
