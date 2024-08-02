@@ -105,7 +105,7 @@ module Make
       let (>>||) = M.para_atomic
       let (>>!) = M.(>>!)
       let (>>::) = M.(>>::)
-      let (|||) = M.(|||)
+      (* let (|||) = M.(|||) *)
 
       let sxt_op sz = M.op1 (Op.Sxt sz)
       and uxt_op sz = M.op1 (Op.Mask sz)
@@ -2889,21 +2889,25 @@ module Make
       let stzg = do_stzg Once
       and stz2g = do_stzg Twice
 
-      let irg rd rn rm_opt ii =
-        let read_opt = function
-          | None -> M.unitT None
-          | Some r -> read_reg_ord r ii >>= fun v -> M.unitT (Some v)
-        in
-        read_reg_ord rd ii >>|
-        read_reg_ord rn ii >>|
-        read_opt rm_opt >>= fun ((vd, _vn), _vm_opt) ->
+      (* let irg rd _rn _rm_opt ii = *)
+        (* let read_opt = function *)
+        (*   | None -> M.unitT None *)
+        (*   | Some r -> read_reg_ord r ii >>= fun v -> M.unitT (Some v) *)
+        (* in *)
+        (* read_reg_ord rd ii >>| *)
+        (* read_reg_ord rn ii >>| *)
+        (* read_opt rm_opt >>= fun ((_vd, _vn), _vm_opt) -> *)
         (* TODO: check Memory Tagging enabled *)
         (* TODO: read GCR_EL1.RRND *)
         (* TODO: read GCR_EL1.Exclude *)
         (* TODO: if all ones, return '0000' *)
         (* TODO: process excluding *)
-        let vs = List.init 15 (fun v -> do_write_tag vd (V.intToV v) ii) in
-        List.fold_right (|||) vs (M.unitT ()) >>= B.next1T
+        (* let vs = List.init 2 (fun v -> do_write_tag vd (V.intToV v) ii) in *)
+        (* let vs = List.init 1 (fun _v -> do_write_tag vd V.one ii) in *)
+        (* List.fold_right (|||) vs (M.unitT ()) >>= B.next1T *)
+        (* do_write_tag vd V.one ii >>= fun () -> *)
+        (* write_reg_dest rd V.one ii >>= *)
+        (* B.nextSetT rd *)
 
 
 (*********************)
@@ -3098,9 +3102,10 @@ module Make
         | I_LDG (rt,rn,k) ->
             check_memtag "LDG" ;
             ldg rt rn k ii
-        | I_IRG (rd,rn,rm_opt) ->
+        | I_IRG (_rd,_rn,_rm_opt) ->
             check_memtag "IRG" ;
-            irg rd rn rm_opt ii
+            (* irg rd rn rm_opt ii *)
+            B.nextT
         | I_STXR(var,t,rr,rs,rd) ->
             stxr (tr_variant var) t rr rs rd ii
         | I_STXRBH(bh,t,rr,rs,rd) ->

@@ -1,0 +1,10 @@
+Test E3 Required
+States 1
+0:X1=0;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition forall (0:X1=0)
+Observation E3 Always 1 0
+Hash=9a8be9024ba6a272f5be22cb04d0602c
+
