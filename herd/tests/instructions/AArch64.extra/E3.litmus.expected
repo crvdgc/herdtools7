@@ -1,0 +1,13 @@
+Test E3 Allowed
+States 4
+0:X1=0;
+0:X1=x:t1;
+0:X1=x:t2;
+0:X1=x:t3;
+No
+Witnesses
+Positive: 0 Negative: 4
+Condition exists (0:X1=x:hello)
+Observation E3 Never 0 4
+Hash=7a03767ecaa7b1d8972bfc9b79c6c12c
+
