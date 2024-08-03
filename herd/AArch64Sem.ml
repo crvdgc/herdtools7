@@ -2909,29 +2909,43 @@ module Make
       (* parallel { *)
       let irg (rd : AArch64Base.reg) rn rm_opt ii =
         let ( let* ) = ( >>= ) in
-        let* vm_opt = match rm_opt with
+        let* (vn, vm_opt) =
+          read_reg_ord rn ii >>|
+          match rm_opt with
           | None -> M.unitT None
-          | Some rm -> read_reg_ord rm ii >>= fun v -> M.unitT (Some v)
+          | Some rm ->
+              let* v = read_reg_ord rm ii in
+              M.unitT (Some v)
+        in
+        let set_tag n =
+
+          let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
+          let* v = M.op Op.SetTag vn tag in
+          write_reg rd v ii
         in
         let do_irg n =
-          let* vn = read_reg_ord rn ii in
           let* () = match vm_opt with
             | None -> M.unitT ()
             | Some vm -> M.isBitUnsetT vm (V.intToV n)
           in
-          let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
-          let* v = M.op Op.SetTag vn tag in
-          (* let* () = M.restrict M.VC.[ Assign (cnstrnt_var, Atom v) ] in *)
-          write_reg rd v ii
+          set_tag n
         in
-        let f eirg munit : unit M.t =
-          M.altT eirg munit
+        let* is_all_ones =
+          match vm_opt with
+          | None -> M.unitT V.zero
+          | Some vm ->
+              let all_ones_mask = V.intToV 0xFFFF in
+              let* masked = M.op Op.And vm all_ones_mask in
+              M.op Op.Eq masked all_ones_mask
         in
-        match List.init 16 Fun.id with
-        | h::t ->
-          List.fold_right f (List.map do_irg t) (do_irg h)
-          >>= B.next1T
-        | _ -> (* impossible *) assert false
+        M.choiceT
+          is_all_ones
+          (set_tag 0)
+          (match List.init 16 Fun.id with
+          | h::t ->
+            List.fold_right M.altT (List.map do_irg t) (do_irg h)
+          | _ -> (* impossible *) assert false)
+        >>= B.next1T
       (* } parallel *)
 
     (* det { *)
