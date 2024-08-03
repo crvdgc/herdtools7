@@ -2917,7 +2917,7 @@ module Make
           let* vn = read_reg_ord rn ii in
           let* () = match vm_opt with
             | None -> M.unitT ()
-            | Some vm -> M.neqT vm (V.intToV n)
+            | Some vm -> M.isBitUnsetT vm (V.intToV n)
           in
           let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
           let* v = M.op Op.SetTag vn tag in

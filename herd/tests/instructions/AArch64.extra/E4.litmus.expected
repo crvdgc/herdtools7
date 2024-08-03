@@ -1,6 +1,6 @@
 Test E4 Required
 States 15
-0:X1=x:t0;
+0:X1=x:t1;
 0:X1=x:t10;
 0:X1=x:t11;
 0:X1=x:t12;
@@ -18,7 +18,7 @@ States 15
 Ok
 Witnesses
 Positive: 15 Negative: 0
-Condition forall (not (0:X1=x:t1))
+Condition forall (not (0:X1=x:t0))
 Observation E4 Always 15 0
 Hash=39f2c8b7b5ca12b960e5c7ab7722449a
 

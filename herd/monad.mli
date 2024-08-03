@@ -339,6 +339,10 @@ module type S =
 (* Equality *)
     val assign : A.V.v -> A.V.v -> unit t
     val eqT : A.V.v -> A.V.v -> unit t
+(* Bits *)
+    val bitT : A.V.v -> A.V.v -> VC.atom t
+    val isBitSetT : A.V.v -> A.V.v -> unit t
+    val isBitUnsetT : A.V.v -> A.V.v -> unit t
 (* Acts as an inequality equation *)
     val neqT : A.V.v -> A.V.v -> unit t
 
