@@ -1435,6 +1435,8 @@ instr:
     { I_MOPL ($1,$2,$4,$6,$8) }
 | MOPZ xreg COMMA xreg COMMA xreg
     { I_MOP ($1,V64,$2,$4,$6,ZR) }
+| TOK_MUL xreg COMMA xreg COMMA xreg
+    { I_MOP (MOPExt.ADD,V64,$2,$4,$6,ZR) }
 | MOPZ wreg COMMA wreg COMMA wreg
     { I_MOP ($1,V32,$2,$4,$6,ZR) }
 | MOP xreg COMMA xreg COMMA xreg COMMA xreg
