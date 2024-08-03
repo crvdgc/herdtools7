@@ -2927,7 +2927,11 @@ module Make
         let f eirg munit : unit M.t =
           M.altT eirg munit
         in
-        List.fold_right f (List.map do_irg (List.init 15 Fun.id)) (M.unitT ()) >>= B.next1T
+        match List.init 16 Fun.id with
+        | h::t ->
+          List.fold_right f (List.map do_irg t) (do_irg h)
+          >>= B.next1T
+        | _ -> (* impossible *) assert false
       (* } parallel *)
 
     (* det { *)

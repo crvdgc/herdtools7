@@ -1,6 +1,5 @@
 Test E3 Allowed
 States 16
-0:X1=0;
 0:X1=x:t0;
 0:X1=x:t1;
 0:X1=x:t10;
@@ -8,6 +7,7 @@ States 16
 0:X1=x:t12;
 0:X1=x:t13;
 0:X1=x:t14;
+0:X1=x:t15;
 0:X1=x:t2;
 0:X1=x:t3;
 0:X1=x:t4;
