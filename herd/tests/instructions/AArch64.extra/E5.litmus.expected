@@ -1,0 +1,24 @@
+Test E4 Required
+States 15
+0:X1=x:t0;
+0:X1=x:t1;
+0:X1=x:t10;
+0:X1=x:t11;
+0:X1=x:t12;
+0:X1=x:t13;
+0:X1=x:t14;
+0:X1=x:t15;
+0:X1=x:t2;
+0:X1=x:t4;
+0:X1=x:t5;
+0:X1=x:t6;
+0:X1=x:t7;
+0:X1=x:t8;
+0:X1=x:t9;
+No
+Witnesses
+Positive: 13 Negative: 2
+Condition forall (not (0:X1=x:t1) /\ not (0:X1=x:t2))
+Observation E4 Sometimes 13 2
+Hash=5636d8f61ba6e9c72c60cc386646da79
+
