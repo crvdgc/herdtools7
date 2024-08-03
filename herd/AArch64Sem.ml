@@ -2920,10 +2920,10 @@ module Make
               M.unitT (Some v)
         in
         let set_tag n =
-
           let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
           let* v = M.op Op.SetTag vn tag in
-          write_reg rd v ii
+          write_reg_dest rd v ii
+          >>= B.nextSetT rd
         in
         let do_irg n =
           let* () = match vm_opt with
@@ -2947,7 +2947,6 @@ module Make
           | h::t ->
             List.fold_right M.altT (List.map do_irg t) (do_irg h)
           | _ -> (* impossible *) assert false)
-        >>= B.next1T
       (* } altT *)
 
     (* det { *)
