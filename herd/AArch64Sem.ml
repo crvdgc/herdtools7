@@ -2888,6 +2888,7 @@ module Make
       let stzg = do_stzg Once
       and stz2g = do_stzg Twice
 
+      (* parallel { *)
       (* let irg rd rn _rm_opt ii = *)
         (* let read_opt = function *)
         (*   | None -> M.unitT None *)
@@ -2896,18 +2897,19 @@ module Make
         (* read_reg_ord rd ii >>| *)
         (* read_reg_ord rn ii >>| *)
         (* read_opt rm_opt >>= fun ((_vd, _vn), _vm_opt) -> *)
-        (* TODO: check Memory Tagging enabled *)
-        (* TODO: read GCR_EL1.RRND *)
-        (* TODO: read GCR_EL1.Exclude *)
         (* TODO: if all ones, return '0000' *)
         (* TODO: process excluding *)
         (* let vs = List.init 2 (fun v -> do_write_tag vd (V.intToV v) ii) in *)
         (* let vs = List.init 1 (fun _v -> do_write_tag vd V.one ii) in *)
         (* List.fold_right (|||) vs (M.unitT ()) >>= B.next1T *)
         (* do_write_tag vd V.one ii >>= fun () -> *)
+      (* } parallel *)
 
-      (* parallel { *)
+      (* altT { *)
       let irg (rd : AArch64Base.reg) rn rm_opt ii =
+        (* TODO: check Memory Tagging enabled *)
+        (* TODO: read GCR_EL1.RRND *)
+        (* TODO: read GCR_EL1.Exclude *)
         let ( let* ) = ( >>= ) in
         let* (vn, vm_opt) =
           read_reg_ord rn ii >>|
@@ -2946,7 +2948,7 @@ module Make
             List.fold_right M.altT (List.map do_irg t) (do_irg h)
           | _ -> (* impossible *) assert false)
         >>= B.next1T
-      (* } parallel *)
+      (* } altT *)
 
     (* det { *)
     (* let irg rd rn _rm_opt ii = *)
