@@ -105,7 +105,6 @@ module Make
       let (>>||) = M.para_atomic
       let (>>!) = M.(>>!)
       let (>>::) = M.(>>::)
-      (* let (|||) = M.(|||) *)
 
       let sxt_op sz = M.op1 (Op.Sxt sz)
       and uxt_op sz = M.op1 (Op.Mask sz)
@@ -2908,20 +2907,27 @@ module Make
         (* do_write_tag vd V.one ii >>= fun () -> *)
 
       (* parallel { *)
-      let irg (rd : AArch64Base.reg) rn _rm_opt ii =
+      let irg (rd : AArch64Base.reg) rn rm_opt ii =
         let ( let* ) = ( >>= ) in
+        let* vm_opt = match rm_opt with
+          | None -> M.unitT None
+          | Some rm -> read_reg_ord rm ii >>= fun v -> M.unitT (Some v)
+        in
         let do_irg n =
           let* vn = read_reg_ord rn ii in
+          let* () = match vm_opt with
+            | None -> M.unitT ()
+            | Some vm -> M.neqT vm (V.intToV n)
+          in
           let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
           let* v = M.op Op.SetTag vn tag in
           (* let* () = M.restrict M.VC.[ Assign (cnstrnt_var, Atom v) ] in *)
           write_reg rd v ii
         in
         let f eirg munit : unit M.t =
-          let v = V.fresh_var () in
-          M.choiceT v eirg munit
+          M.altT eirg munit
         in
-        List.fold_right f (List.map do_irg [1;2;3]) (M.unitT ()) >>= B.next1T
+        List.fold_right f (List.map do_irg (List.init 15 Fun.id)) (M.unitT ()) >>= B.next1T
       (* } parallel *)
 
     (* det { *)

@@ -7,5 +7,5 @@ int x=100;
 }
  P0            ;
  IRG X1,X0     ;
-exists 0:X1=x:hello
+exists 0:X1=x:t2
 
