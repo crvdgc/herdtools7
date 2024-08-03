@@ -2908,12 +2908,14 @@ module Make
         (* do_write_tag vd V.one ii >>= fun () -> *)
 
       (* parallel { *)
-      let irg rd rn _rm_opt ii =
+      let irg (rd : AArch64Base.reg) rn _rm_opt ii =
         let do_irg n =
           let ( let* ) = (>>=) in
           let* vn = read_reg_ord rn ii in
           let tag = V.Val (Constant.Tag ("t" ^ string_of_int n)) in
           let* v = M.op Op.SetTag vn tag in
+          let cnstrnt_var = V.fresh_var () in
+          let* () = M.restrict M.VC.[ Assign (cnstrnt_var, Atom v) ] in
           write_reg rd v ii
         in
         List.fold_right (|||) (List.map do_irg [1;2;3]) (M.unitT ()) >>= B.next1T
