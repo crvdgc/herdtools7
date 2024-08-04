@@ -3680,7 +3680,6 @@ module Make
                | MOPExt.SUB -> Op.Sub
            and sz = tr_variant v in
            begin
-             (* TODO: slice to destsize? *)
              (read_reg_ord_sz sz rn ii)
              >>| (read_reg_ord_sz sz rm ii)
              >>| read_reg_ord_sz sz ra ii
