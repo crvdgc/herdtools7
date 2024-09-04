@@ -1700,7 +1700,6 @@ Monad type:
         (fun () -> VC.Terop (op,v1,v2,v3))
 
     let add =  op Op.Add
-    let eor =  op Op.Xor
 
 
 (* Add an inequality constraint *)

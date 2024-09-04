@@ -2259,7 +2259,6 @@ module Make
           >>= (fun v -> write_reg_neon_sz (tr_simd_variant var) r v ii)
 
       let sum_elems (v1,v2) = M.add v1 v2
-      let eor_elems (v1,v2) = M.eor v1 v2
 
       let simd_add r1 r2 r3 ii =
         let nelem = neon_nelem r1 in

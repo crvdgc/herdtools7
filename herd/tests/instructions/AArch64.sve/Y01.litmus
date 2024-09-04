@@ -1,42 +1,18 @@
 AArch64 Y01
-Variant=sve
+(* EOR *)
 {
-uint32_t t[8] = {1,2,3,4,5,6,7,8};
-uint32_t s[8] = {8,7,6,5,4,3,2,1};
-0:X1=t;
-0:X2=s;
+  uint64_t t[2] = {1,2};
+  uint64_t s[2] = {3,4};
+  0:X0=t;
+  0:X1=s;
 }
-
-(* Adapted from V25 *)
-(* This test does not depends on scalable vector length *)
-
-  P0                  ;
-CNTW X0               ;
-CMP X0,#8             ;
-B.GT L3               ;
-MOV X3,#0             ;
-PTRUE P0.S            ;
-L1:                   ;
-LD1W {Z0.S},P0/Z,[X1] ;
-LD1W {Z1.S},P0/Z,[X2] ;
-EOR Z0.S,Z0.S,Z1.S    ;
-ST1W {Z0.S},P0,[X1]   ;
-ADD X1,X1,X0,LSL #2   ;
-ADD X2,X2,X0,LSL #2   ;
-INCW X3               ;
-L2:                   ;
-CMP X3,#8             ;
-B.LT L1               ;
-B L0                  ;
-L3:                   ;
-PTRUE P0.S,VL8        ;
-LD1W {Z0.S},P0/Z,[X1] ;
-LD1W {Z1.S},P0/Z,[X2] ;
-EOR Z0.S,Z0.S,Z0.S    ;
-ST1W {Z0.S},P0,[X1]   ;
-L0:                   ;
+P0                    ;
+PTRUE P0.D,VL2        ;
+LD1D {Z0.D},P0/Z,[X0] ;
+LD1D {Z1.D},P0/Z,[X1] ;
+EOR Z0.D,Z0.D,Z1.D    ;
+ST1D {Z0.D},P0,[X0]   ;
 forall (
-  t={9,5,5,1,1,5,5,9} /\
-  s={8,7,6,5,4,3,2,1}
+  t={2,6} /\
+  s={3,4}
 )
-
