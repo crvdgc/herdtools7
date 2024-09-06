@@ -2396,7 +2396,7 @@ let do_pp_instruction m =
 (* Read System register *)
   | I_MRS (r,sr) ->
       sprintf "MRS %s,%s" (pp_xreg r) (pp_sysreg sr)
-  (* Read System register *)
+(* Write System register *)
   | I_MSR (sr,r) ->
      sprintf "MSR %s,%s" (pp_sysreg sr) (pp_xreg r)
 (* Memory Tagging *)
